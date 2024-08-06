@@ -9,6 +9,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import android.support.v4.content.ContextCompat
 import com.tonyodev.fetch2.NetworkType
 import com.tonyodev.fetch2core.isNetworkAvailable
 import com.tonyodev.fetch2core.isOnWiFi
@@ -36,11 +37,11 @@ class NetworkInfoProvider constructor(private val context: Context) {
                     .build()
             val networkCallback: ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
 
-                override fun onLost(network: Network?) {
+                override fun onLost(network: Network) {
                     notifyNetworkChangeListeners()
                 }
 
-                override fun onAvailable(network: Network?) {
+                override fun onAvailable(network: Network) {
                     notifyNetworkChangeListeners()
                 }
             }
@@ -48,7 +49,11 @@ class NetworkInfoProvider constructor(private val context: Context) {
             connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
         } else {
             try {
-                context.registerReceiver(networkChangeBroadcastReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    context.registerReceiver(networkChangeBroadcastReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION),Context.RECEIVER_NOT_EXPORTED)
+                }else{
+                    context.registerReceiver(networkChangeBroadcastReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+                }
                 broadcastRegistered = true
             } catch (e: Exception) {
 

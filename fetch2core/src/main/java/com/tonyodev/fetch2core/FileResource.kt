@@ -87,11 +87,11 @@ class FileResource : Parcelable, Serializable {
         override fun createFromParcel(source: Parcel): FileResource {
             val fileResource = FileResource()
             fileResource.id = source.readLong()
-            fileResource.name = source.readString()
+            fileResource.name = source.readString().toString()
             fileResource.length = source.readLong()
-            fileResource.file = source.readString()
+            fileResource.file = source.readString().toString()
             fileResource.extras = Extras(source.readSerializable() as HashMap<String, String>)
-            fileResource.md5 = source.readString()
+            fileResource.md5 = source.readString().toString()
             return fileResource
         }
 
